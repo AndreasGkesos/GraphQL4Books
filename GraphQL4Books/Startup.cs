@@ -1,5 +1,4 @@
-﻿using GraphiQl;
-using GraphQL;
+﻿using GraphQL;
 using GraphQL.Server;
 using GraphQL4Books.API.GraphQL;
 using GraphQL4Books.DAL;
@@ -44,7 +43,6 @@ namespace GraphQL4Books
         public void Configure(IApplicationBuilder app)
         {
             app.UseGraphQL<GraphQL4BooksSchema>();
-            app.UseGraphiQl();
             app.UseHttpsRedirection();
         }
     }
