@@ -1,9 +1,12 @@
 ﻿using GraphQL;
 using GraphQL.Server;
+using GraphQL.Server.Ui.Playground;
+using GraphQL.Server.Ui.Voyager;
 using GraphQL4Books.API.GraphQL;
 using GraphQL4Books.DAL;
 using GraphQL4Books.DAL.Repos;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -22,6 +25,11 @@ namespace GraphQL4Books
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.Configure<KestrelServerOptions>(options =>
+            {
+                options.AllowSynchronousIO = true;
+            });
+
             services.AddMvc();
             services.AddDbContext<ApplicationDbContext>(options =>
                                         options.UseSqlServer(Configuration.GetConnectionString("DatabaseConnection")));
@@ -44,6 +52,12 @@ namespace GraphQL4Books
         {
             app.UseGraphQL<GraphQL4BooksSchema>();
             app.UseHttpsRedirection();
+
+            // use graphql-playground middleware at default url / ui / playground
+            app.UseGraphQLPlayground(new GraphQLPlaygroundOptions());
+
+            // use voyager middleware at default url /ui/voyager
+            app.UseGraphQLVoyager(new GraphQLVoyagerOptions());
         }
     }
 }
