@@ -10,7 +10,7 @@ namespace GraphQL4Books.API.GraphQL.Types
     {
         public UserType(ReviewRepository reviewRepository, IDataLoaderContextAccessor dataLoaderAccessor)
         {
-            Field(t => t.Id);
+            Field(x => x.Id, type: typeof(IdGraphType));
             Field(t => t.Name).Description("The name of the user");
             Field(t => t.Email);
             Field<ListGraphType<ReviewType>>(

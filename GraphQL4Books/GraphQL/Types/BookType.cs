@@ -10,10 +10,10 @@ namespace GraphQL4Books.API.GraphQL.Types
     {
         public BookType(ReviewRepository reviewRepository, IDataLoaderContextAccessor dataLoaderAccessor)
         {
-            Field(t => t.Id);
+            Field(x => x.Id, type: typeof(IdGraphType));
             Field(t => t.Title).Description("The title of the book");
             Field(t => t.Description);
-            Field(t => t.Author);
+            Field(t => t.Author, type: typeof(AuthorType));
             Field<ListGraphType<ReviewType>>(
                 "reviews",
                 resolve: context =>

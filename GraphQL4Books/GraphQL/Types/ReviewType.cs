@@ -7,11 +7,11 @@ namespace GraphQL4Books.API.GraphQL.Types
     {
         public ReviewType()
         {
-            Field(t => t.Id);
+            Field(x => x.Id, type: typeof(IdGraphType));
             Field(t => t.Title).Description("The title of the review");
             Field(t => t.Body);
-            Field(t => t.Book);
-            Field(t => t.User);
+            Field(t => t.Book, type: typeof(BookType));
+            Field(t => t.User, type: typeof(UserType));
         }
     }
 }

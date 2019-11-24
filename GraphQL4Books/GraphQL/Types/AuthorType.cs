@@ -10,7 +10,7 @@ namespace GraphQL4Books.API.GraphQL.Types
     {
         public AuthorType(BookRepository bookRepository, IDataLoaderContextAccessor dataLoaderAccessor)
         {
-            Field(t => t.Id);
+            Field(x => x.Id, type: typeof(IdGraphType));
             Field(t => t.Name).Description("The name of the author");
             Field(t => t.Bio);
             Field(t => t.Email);
