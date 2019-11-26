@@ -8,6 +8,7 @@ namespace GraphQL4Books.API.GraphQL
         public GraphQL4BooksSchema(IDependencyResolver resolver) : base(resolver)
         {
             Query = resolver.Resolve<GraphQL4BooksQuery>();
+            Mutation = resolver.Resolve<GraphQL4BooksMutation>();
         }
     }
 }

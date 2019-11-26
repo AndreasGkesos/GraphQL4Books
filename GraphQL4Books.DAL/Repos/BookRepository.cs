@@ -16,27 +16,50 @@ namespace GraphQL4Books.DAL.Repos
             _dbContext = dbContext;
         }
 
-        public Task<List<Book>> GetAll()
+        public List<Book> GetAll()
         {
-            return _dbContext.Books.ToListAsync();
+            return _dbContext.Books.Include(a => a.Author).Include(r => r.Reviews).ToList();
         }
 
-        public async Task<Book> GetById(Guid bookId)
+        public Task<List<Book>> GetAllAsync()
         {
-            return await _dbContext.Books.Where(p => p.Id == bookId).FirstOrDefaultAsync();
+            return _dbContext.Books.Include(a => a.Author).Include(r => r.Reviews).ToListAsync();
         }
 
-        public async Task<Book> AddReview(Book book)
+        public Book GetById(Guid bookId)
+        {
+            return _dbContext.Books.Where(p => p.Id == bookId).Include(a => a.Author).Include(r => r.Reviews).FirstOrDefault();
+        }
+
+        public async Task<Book> GetByIdAsync(Guid bookId)
+        {
+            return await _dbContext.Books.Where(p => p.Id == bookId).Include(a => a.Author).Include(r => r.Reviews).FirstOrDefaultAsync();
+        }
+
+        public Book AddReview(Book book)
+        {
+            _dbContext.Books.Add(book);
+            _dbContext.SaveChanges();
+            return book;
+        }
+
+        public async Task<Book> AddReviewAsync(Book book)
         {
             _dbContext.Books.Add(book);
             await _dbContext.SaveChangesAsync();
             return book;
         }
 
-        public async Task<ILookup<Guid, Book>> GetForAuthors(IEnumerable<Guid> authorIds)
+        public IEnumerable<Book> GetForAuthor(Guid authorId)
         {
-            var books = await _dbContext.Books.Where(b => authorIds.Contains(b.AuthodId)).ToListAsync();
-            return books.ToLookup(x => x.AuthodId);
+            var books = _dbContext.Books.Where(b => b.AuthodId == authorId).Include(a => a.Author).ToList();
+            return books;
+        }
+
+        public async Task<IEnumerable<Book>> GetForAuthorAsync(Guid authorId)
+        {
+            var books = await _dbContext.Books.Where(b => b.AuthodId == authorId).Include(a => a.Author).ToListAsync();
+            return books;
         }
     }
 }

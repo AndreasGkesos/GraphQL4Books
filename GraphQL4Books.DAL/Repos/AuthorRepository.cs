@@ -16,17 +16,34 @@ namespace GraphQL4Books.DAL.Repos
             _dbContext = dbContext;
         }
 
-        public Task<List<Author>> GetAll()
+        public List<Author> GetAll()
         {
-            return _dbContext.Authors.ToListAsync();
+            return _dbContext.Authors.Include(b => b.Books).ToList();
         }
 
-        public async Task<Author> GetById(Guid authorId)
+        public async Task<List<Author>> GetAllAsync()
         {
-            return await _dbContext.Authors.Where(p => p.Id == authorId).FirstOrDefaultAsync();
+            return await _dbContext.Authors.Include(b => b.Books).ToListAsync();
         }
 
-        public async Task<Author> AddReview(Author author)
+        public  Author GetById(Guid authorId)
+        {
+            return _dbContext.Authors.Where(p => p.Id == authorId).Include(b => b.Books).FirstOrDefault();
+        }
+
+        public async Task<Author> GetByIdAsync(Guid authorId)
+        {
+            return await _dbContext.Authors.Where(p => p.Id == authorId).Include(b => b.Books).FirstOrDefaultAsync();
+        }
+
+        public Author AddReview(Author author)
+        {
+            _dbContext.Authors.Add(author);
+            _dbContext.SaveChanges();
+            return author;
+        }
+
+        public async Task<Author> AddReviewAsync(Author author)
         {
             _dbContext.Authors.Add(author);
             await _dbContext.SaveChangesAsync();

@@ -16,33 +16,74 @@ namespace GraphQL4Books.DAL.Repos
             _dbContext = dbContext;
         }
 
-        public Task<List<Review>> GetAll()
+        public List<Review> GetAll()
         {
-            return _dbContext.Reviews.ToListAsync();
+            return _dbContext.Reviews.Include(u => u.User).Include(b => b.Book).ToList();
         }
 
-        public async Task<Review> GetById(Guid reviewId)
+        public async Task<List<Review>> GetAllAsync()
         {
-            return await _dbContext.Reviews.Where(p => p.Id == reviewId).FirstOrDefaultAsync();
+            return await _dbContext.Reviews.Include(u => u.User).Include(b => b.Book).ToListAsync();
         }
 
-        public async Task<Review> AddReview(Review review)
+        public Review GetById(Guid reviewId)
+        {
+            return _dbContext.Reviews.Where(p => p.Id == reviewId).Include(u => u.User).Include(b => b.Book).FirstOrDefault();
+        }
+
+        public async Task<Review> GetByIdAsync(Guid reviewId)
+        {
+            return await _dbContext.Reviews.Where(p => p.Id == reviewId).Include(u => u.User).Include(b => b.Book).FirstOrDefaultAsync();
+        }
+
+        public Review AddReview(Review review)
+        {
+            _dbContext.Reviews.Add(review);
+            _dbContext.SaveChanges();
+            return review;
+        }
+
+        public async Task<Review> AddReviewAsync(Review review)
         {
             _dbContext.Reviews.Add(review);
             await _dbContext.SaveChangesAsync();
             return review;
         }
 
-        public async Task<ILookup<Guid, Review>> GetForUsers(IEnumerable<Guid> userIds)
+        public IEnumerable<Review> GetForUser(Guid userId)
         {
-            var reviews = await _dbContext.Reviews.Where(r => userIds.Contains(r.UserId)).ToListAsync();
-            return reviews.ToLookup(x => x.UserId);
+            var reviews = _dbContext.Reviews.Where(r => r.UserId == userId).Include(u => u.User).Include(b => b.Book).ToList();
+            return reviews;
         }
 
-        public async Task<ILookup<Guid, Review>> GetForBooks(IEnumerable<Guid> booksIds)
+        public async Task<IEnumerable<Review>> GetForUserAsync(Guid userId)
         {
-            var reviews = await _dbContext.Reviews.Where(r => booksIds.Contains(r.BookId)).ToListAsync();
-            return reviews.ToLookup(x => x.BookId);
+            var reviews = await _dbContext.Reviews.Where(r => r.UserId == userId).Include(u => u.User).Include(b => b.Book).ToListAsync();
+            return reviews;
+        }
+
+        public IEnumerable<Review> GetForBooks(IEnumerable<Guid> booksIds)
+        {
+            var reviews = _dbContext.Reviews.Where(r => booksIds.Contains(r.BookId)).Include(u => u.User).Include(b => b.Book).ToList();
+            return reviews;
+        }
+
+        public async Task<IEnumerable<Review>> GetForBooksAsync(IEnumerable<Guid> booksIds)
+        {
+            var reviews = await _dbContext.Reviews.Where(r => booksIds.Contains(r.BookId)).Include(u => u.User).Include(b => b.Book).ToListAsync();
+            return reviews;
+        }
+
+        public Book GetForBook(Guid bookId)
+        {
+            var book = _dbContext.Books.Where(b => b.Id == bookId).Include(a => a.Author).FirstOrDefault();
+            return book;
+        }
+
+        public async Task<Book> GetForBookAsync(Guid bookId)
+        {
+            var book = await _dbContext.Books.Where(b => b.Id == bookId).Include(a => a.Author).FirstOrDefaultAsync();
+            return book;
         }
     }
 }

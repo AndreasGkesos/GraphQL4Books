@@ -18,6 +18,11 @@ namespace GraphQL4Books.API.GraphQL
                 resolve: context => bookRepository.GetAll()
             );
 
+            //FieldAsync<ListGraphType<BookType>>(
+            //    "books",
+            //    resolve: async context => await bookRepository.GetAll()
+            //);
+
             Field<BookType>(
                 "book",
                 arguments: new QueryArguments(new QueryArgument<NonNullGraphType<IdGraphType>>

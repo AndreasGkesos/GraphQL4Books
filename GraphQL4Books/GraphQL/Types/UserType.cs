@@ -8,7 +8,7 @@ namespace GraphQL4Books.API.GraphQL.Types
 {
     public class UserType : ObjectGraphType<User>
     {
-        public UserType(ReviewRepository reviewRepository, IDataLoaderContextAccessor dataLoaderAccessor)
+        public UserType(ReviewRepository reviewRepository)
         {
             Field(x => x.Id, type: typeof(IdGraphType));
             Field(t => t.Name).Description("The name of the user");
@@ -17,9 +17,8 @@ namespace GraphQL4Books.API.GraphQL.Types
                 "reviews",
                 resolve: context =>
                 {
-                    var loader = dataLoaderAccessor.Context.GetOrAddCollectionBatchLoader<Guid, Review>(
-                        "GetReviewByUserId", reviewRepository.GetForUsers);
-                    return loader.LoadAsync(context.Source.Id);
+                    var reviews = reviewRepository.GetForUser(context.Source.Id);
+                    return reviews;
                 }
             );
         }

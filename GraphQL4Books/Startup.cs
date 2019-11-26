@@ -32,7 +32,8 @@ namespace GraphQL4Books
 
             services.AddMvc();
             services.AddDbContext<ApplicationDbContext>(options =>
-                                        options.UseSqlServer(Configuration.GetConnectionString("DatabaseConnection")));
+                                        options.UseSqlServer(Configuration.GetConnectionString("DatabaseConnection")),
+                                        ServiceLifetime.Transient);
             services.AddScoped<BookRepository>();
             services.AddScoped<ReviewRepository>();
             services.AddScoped<AuthorRepository>();
@@ -40,6 +41,8 @@ namespace GraphQL4Books
 
             services.AddScoped<IDependencyResolver>(s => new FuncDependencyResolver(s.GetRequiredService));
             services.AddScoped<GraphQL4BooksSchema>();
+            services.AddScoped<GraphQL4BooksQuery>();
+            services.AddScoped<GraphQL4BooksMutation>();
 
             services.AddGraphQL(o => { o.ExposeExceptions = false; })
                 .AddGraphTypes(ServiceLifetime.Scoped)
