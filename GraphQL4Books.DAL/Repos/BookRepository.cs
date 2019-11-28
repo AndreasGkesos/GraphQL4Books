@@ -36,14 +36,14 @@ namespace GraphQL4Books.DAL.Repos
             return await _dbContext.Books.Where(p => p.Id == bookId).Include(a => a.Author).Include(r => r.Reviews).FirstOrDefaultAsync();
         }
 
-        public Book AddReview(Book book)
+        public Book AddBooks(Book book)
         {
             _dbContext.Books.Add(book);
             _dbContext.SaveChanges();
             return book;
         }
 
-        public async Task<Book> AddReviewAsync(Book book)
+        public async Task<Book> AddBookAsync(Book book)
         {
             _dbContext.Books.Add(book);
             await _dbContext.SaveChangesAsync();
@@ -60,6 +60,17 @@ namespace GraphQL4Books.DAL.Repos
         {
             var books = await _dbContext.Books.Where(b => b.AuthodId == authorId).Include(a => a.Author).ToListAsync();
             return books;
+        }
+
+        public async Task<Book> UpdateBookAsync(Book newBook, Book oldBook)
+        {
+            oldBook.Title = newBook.Title;
+            oldBook.Description = newBook.Description;
+            oldBook.AuthodId = newBook.AuthodId;
+
+            await _dbContext.SaveChangesAsync();
+
+            return oldBook;
         }
     }
 }
